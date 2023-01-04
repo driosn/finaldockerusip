@@ -5,13 +5,13 @@ pipeline {
     stages {
         stage('Clone QA env') {
             steps {
-                git '<put here your repository url>'
+                git 'https://github.com/driosn/finaldockerusip/tree/qa'
             }            
         }
         stage('Change frontend ip'){
             steps{
                 dir('client'){
-                    sh "cat src/components/Books.vue | grep 'http://'"
+                    sh "cat src/components/Books.vue | grep 'http://'"~
                     sh "sed -i 's/localhost/${qa_server_ip}/g' src/components/Books.vue"
                     sh "cat src/components/Books.vue | grep 'http://'"
                 }
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Deploy QA environment'){
             steps{
-                git '<put here your repository url>'
+                git 'https://github.com/driosn/finaldockerusip/tree/qa'
                 sh "docker compose down"
                 sh "docker compose up -d"
                 sh "docker compose ps"
@@ -56,7 +56,7 @@ pipeline {
         stage ('Deploy PROD environment'){
             agent{label 'prod'}
             steps{
-                git '<put here your repository url>'
+                git 'https://github.com/driosn/finaldockerusip/tree/prod'
                 unstash 'backend_image'
                 unstash 'frontend_image-prod'
                 sh "docker compose -f docker-compose-prod.yml down"
